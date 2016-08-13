@@ -8,7 +8,7 @@
 
   trader = require('./trader');
 
-  tickTime = 3000;
+  tickTime = 10000;
 
   buy = 0;
 
@@ -68,7 +68,7 @@
           for (id in ref) {
             order = ref[id];
             created = order.timestamp_created;
-            buffer = serverTime - (tickTime * 15 / 1000);
+            buffer = serverTime - (tickTime * 100 / 1000);
             if (created < buffer) {
               trader.cancel({
                 id: id
@@ -110,10 +110,10 @@
     if (!lastSell) {
       return;
     }
-    if (btc && sell < lastSell) {
+    if (btc) {
       trader.sell({
         pair: pair,
-        rate: +((sell * 1.00001).toFixed(3)),
+        rate: buy,
         amount: btc
       });
       return;
