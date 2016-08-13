@@ -1,5 +1,5 @@
 dataBaseLink = cfg.mongo.dataBaseLink
-reconnectTime = 10 * 1000
+reconnectTime = 60 * 1000
 driver = require('mongodb')
 client = driver.MongoClient
 objectIdMaker = driver.ObjectID

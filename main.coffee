@@ -7,13 +7,9 @@ initMongo = (next) ->
 		log 'Подключение к базе данных завершено'
 		next()
 
-initCore = (next) ->
+initCore = () ->
 	log 'Запуск ядра...'
-	require('./core/main').init () ->
-		log 'Ядро запущено, торги начались'
-		next()
+	require('./BTCE/btc_usd')
+	log 'Ядро запущено, торги начались'
 
-require('./util').queue(
-	initMongo
-	initCore
-)
+initMongo () -> initCore()

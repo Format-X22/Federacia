@@ -1,3 +1,4 @@
+name = '[BTCE]'
 request = require 'request'
 querystring = require 'querystring'
 sha = require 'crypto-js/hmac-sha512'
@@ -6,33 +7,32 @@ secret = '517b8dbf6af2783ad4e4e8aeb19af368a590d2c41987d49f74ccf23006caebd5'
 url = 'https://btc-e.nz/tapi'
 nonce = 0
 
-info = () ->
-	log '[BTCE] Запрос тикера'
-
-	send {
-		opt:
-			method: 'getInfo'
+info = (config) ->
+	config.opt = {
+		method: 'getInfo'
 	}
 
+	send config
+
 buy = (opt) ->
-	log "[BTCE] Выставление на продажу #{JSON.stringify(opt)}"
+	log "#{name} Покупка #{JSON.stringify opt}"
 
 	opt.type = 'buy'
 
 	trade opt
 
 sell = (opt) ->
-	log "[BTCE] Выставление на покупку #{JSON.stringify(opt)}"
+	log "#{name} Продажа #{JSON.stringify opt}"
 
 	opt.type = 'sell'
 
 	trade opt
 
-ticker = (pair) ->
-	send {
-		url: "https://btc-e.nz/api/2/#{pair}/ticker",
-		method: 'GET'
-	}
+ticker = (config) ->	
+	config.url = "https://btc-e.nz/api/2/#{config.pair}/ticker"
+	config.method = 'GET'
+
+	send config
 
 module.exports = {
 	info
@@ -58,10 +58,9 @@ send = (config) ->
 			failure = error or body.success is 0
 
 			if failure
-				logError '[E][BTCE] Проблемы с драйвером', error, body
+				logError "#{name} Проблемы с трейдером", error, body
 				config.failure? error, body
 			else
-				log "[BTCE] Тело результата: #{try JSON.stringify(body)}"
 				config.success? body
 
 			config.always? error, body
@@ -83,21 +82,23 @@ configureRequest = (config, next) ->
 		}
 
 getNonce = (config, next) ->
-	if config.url then next
+	if config.url 
+		next()
+		return
 
-	if nonce 
+	if nonce
 		next ++nonce
+		return
 		# TODO nonce to mongo
 
 	# TODO get nonce from mongo
-	nonce = 11
-	next nonce
+	next nonce = 34547
 
 parseBody = (body) ->
 	try
-		return JSON.parse(body)
+		return JSON.parse body
 	catch
 		return {
 			success: 0,
-			robotDriverError: 'Can not parse body'
+			robotDriverError: 'Не возможно распарсить тело'
 		}

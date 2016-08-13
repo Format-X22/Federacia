@@ -23,15 +23,15 @@
     });
   };
 
-  initCore = function(next) {
+  initCore = function() {
     log('Запуск ядра...');
-    return require('./core/main').init(function() {
-      log('Ядро запущено, торги начались');
-      return next();
-    });
+    require('./BTCE/btc_usd');
+    return log('Ядро запущено, торги начались');
   };
 
-  require('./util').queue(initMongo, initCore);
+  initMongo(function() {
+    return initCore();
+  });
 
 }).call(this);
 

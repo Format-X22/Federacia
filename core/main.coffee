@@ -1,2 +1,0 @@
-exports.init = (callback) ->
-	callback()
