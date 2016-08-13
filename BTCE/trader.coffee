@@ -34,11 +34,30 @@ ticker = (config) ->
 
 	send config
 
+orders = (config)	->
+	config.opt = {
+		method: 'ActiveOrders'
+	}
+
+	send config
+
+cancel = (config) ->
+	log "#{name} Отмена #{JSON.stringify config.id}"
+
+	config.opt = {
+		order_id: +config.id
+		method: 'CancelOrder'
+	}
+
+	send config
+
 module.exports = {
 	info
 	buy
 	sell
 	ticker
+	orders
+	cancel
 }
 
 trade = (opt) ->
@@ -55,7 +74,7 @@ send = (config) ->
 		request target, params, (error, response, body) ->
 			body = parseBody body
 
-			failure = error or body.success is 0
+			failure = error or (body.success is 0 and body.error isnt 'no orders')
 
 			if failure
 				logError "#{name} Проблемы с трейдером", error, body
@@ -92,7 +111,7 @@ getNonce = (config, next) ->
 		# TODO nonce to mongo
 
 	# TODO get nonce from mongo
-	next nonce = 34547
+	next nonce = 38161
 
 parseBody = (body) ->
 	try

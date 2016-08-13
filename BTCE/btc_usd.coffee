@@ -8,17 +8,20 @@ lastBuy = 0
 lastSell = 0
 usd = 0
 btc = 0
+serverTime = 0
 
 trade = () ->
-	getAccountState () -> getPairState () -> action()
+	getAccountState () -> cleaner () -> getPairState () -> action()
 
 getAccountState = (next) ->
 	trader.info {
 		success: (value) ->
 			try
-				funds = value.return.funds
+				data = value.return
+				funds = data.funds
 				usd = funds.usd
 				btc = funds.btc
+				serverTime = data.server_time
 				next()
 			catch
 				logError "#{name} Ошибка формата состояния аккаунта"
@@ -26,9 +29,30 @@ getAccountState = (next) ->
 			logError "#{name} Ошибка получения текущей информации"
 	}
 
+cleaner = (next) ->
+	trader.orders {
+		pair
+		success: (value) ->
+			if not value then next()
+
+			try
+				for id, order of value.return
+					created = order.timestamp_created
+					buffer = serverTime - (tickTime * 15 / 1000)
+
+					if created < buffer
+						trader.cancel({id})
+			catch
+				logError "#{name} Ошибка формата списка ордеров"
+					
+			next()
+		failure: () ->
+			logError "#{name} Проблемы с получением списка ордеров"
+	}
+
 getPairState = (next) ->
 	trader.ticker {
-		pair,
+		pair
 		success: (value) ->
 			try
 				ticker = value.ticker
