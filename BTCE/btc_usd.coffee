@@ -76,12 +76,13 @@ action = () ->
 		}
 		return
 
+	buyRate = +(((buy + sell) / 2).toFixed(3))
 	buyAmount = +(((usd / sell) - 0.001).toFixed(5))
 
-	if buyAmount and usd and buy > lastBuy
+	if buyAmount > 0 and usd and buy > lastBuy
 		trader.buy {
 			pair
-			rate: sell,
+			rate: buyRate,
 			amount: buyAmount
 		}
 		return

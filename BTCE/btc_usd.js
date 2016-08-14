@@ -106,7 +106,7 @@
   };
 
   action = function() {
-    var buyAmount;
+    var buyAmount, buyRate;
     if (!lastSell) {
       return;
     }
@@ -118,11 +118,12 @@
       });
       return;
     }
+    buyRate = +(((buy + sell) / 2).toFixed(3));
     buyAmount = +(((usd / sell) - 0.001).toFixed(5));
-    if (buyAmount && usd && buy > lastBuy) {
+    if (buyAmount > 0 && usd && buy > lastBuy) {
       trader.buy({
         pair: pair,
-        rate: sell,
+        rate: buyRate,
         amount: buyAmount
       });
     }

@@ -111,7 +111,7 @@ getNonce = (config, next) ->
 		# TODO nonce to mongo
 
 	# TODO get nonce from mongo
-	next nonce = 38738
+	next nonce = 39228
 
 parseBody = (body) ->
 	try
