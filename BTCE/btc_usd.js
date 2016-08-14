@@ -116,12 +116,11 @@
         rate: buy,
         amount: btc
       });
-      return;
     }
     buyRate = +(((buy + sell) / 2).toFixed(3));
     buyAmount = +(((usd / sell) - 0.001).toFixed(5));
     if (buyAmount > 0 && usd && buy > lastBuy) {
-      trader.buy({
+      return trader.buy({
         pair: pair,
         rate: buyRate,
         amount: buyAmount

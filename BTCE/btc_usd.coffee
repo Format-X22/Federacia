@@ -74,7 +74,6 @@ action = () ->
 			rate: buy,
 			amount: btc
 		}
-		return
 
 	buyRate = +(((buy + sell) / 2).toFixed(3))
 	buyAmount = +(((usd / sell) - 0.001).toFixed(5))
@@ -85,7 +84,6 @@ action = () ->
 			rate: buyRate,
 			amount: buyAmount
 		}
-		return
 
 trade()
 setInterval trade, tickTime
