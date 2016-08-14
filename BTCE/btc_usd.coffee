@@ -1,7 +1,7 @@
 pair = 'btc_usd'
 name = "[BTCE #{pair}]"
 trader = require './trader'
-tickTime = 10000
+tickTime = 2500
 buy = 0
 sell = 0
 lastBuy = 0
@@ -38,7 +38,7 @@ cleaner = (next) ->
 			try
 				for id, order of value.return
 					created = order.timestamp_created
-					buffer = serverTime - (tickTime * 100 / 1000)
+					buffer = serverTime - (tickTime * 30 / 1000)
 
 					if created < buffer
 						trader.cancel({id})
@@ -68,22 +68,33 @@ getPairState = (next) ->
 action = () ->
 	if not lastSell then return
 
-	if btc
+	minBtc = 0.01	
+		
+	if btc and btc > minBtc
 		trader.sell {
 			pair
-			rate: buy,
+			rate: toFixed3(buy - (buy - sell) / 2.5),
 			amount: btc
 		}
 
-	buyRate = +(((buy + sell) / 2).toFixed(3))
-	buyAmount = +(((usd / sell) - 0.001).toFixed(5))
+	buyRate = toFixed3((buy + sell) / 2)
+	buyAmount = toFixed5(usd / sell - 0.001)
 
-	if buyAmount > 0 and usd and buy > lastBuy
+	if buyAmount > minBtc and usd and buy > lastBuy
 		trader.buy {
 			pair
 			rate: buyRate,
 			amount: buyAmount
 		}
+
+toFixed3 = (value) ->
+	toFixed(value, 3)
+
+toFixed5 = (value) ->
+	toFixed(value, 5)
+
+toFixed = (value, dot)	->
+	+(value.toFixed(dot))
 
 trade()
 setInterval trade, tickTime

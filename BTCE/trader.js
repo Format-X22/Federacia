@@ -26,13 +26,13 @@
   };
 
   buy = function(opt) {
-    log(name + " Покупка " + (JSON.stringify(opt)));
+    log(name + " ^ Покупка ^ " + (JSON.stringify(opt)));
     opt.type = 'buy';
     return trade(opt);
   };
 
   sell = function(opt) {
-    log(name + " Продажа " + (JSON.stringify(opt)));
+    log(name + " v Продажа v " + (JSON.stringify(opt)));
     opt.type = 'sell';
     return trade(opt);
   };
@@ -126,7 +126,7 @@
       next(++nonce);
       return;
     }
-    return next(nonce = 39228);
+    return next(nonce = 51325);
   };
 
   parseBody = function(body) {

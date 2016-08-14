@@ -15,14 +15,14 @@ info = (config) ->
 	send config
 
 buy = (opt) ->
-	log "#{name} Покупка #{JSON.stringify opt}"
+	log "#{name} ^ Покупка ^ #{JSON.stringify opt}"
 
 	opt.type = 'buy'
 
 	trade opt
 
 sell = (opt) ->
-	log "#{name} Продажа #{JSON.stringify opt}"
+	log "#{name} v Продажа v #{JSON.stringify opt}"
 
 	opt.type = 'sell'
 
@@ -111,7 +111,7 @@ getNonce = (config, next) ->
 		# TODO nonce to mongo
 
 	# TODO get nonce from mongo
-	next nonce = 39228
+	next nonce = 51325
 
 parseBody = (body) ->
 	try
