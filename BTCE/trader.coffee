@@ -14,22 +14,31 @@ info = (config) ->
 
 	send config
 
+depth = (config) ->
+	config.api = 3
+	config.opt = {
+		method: 'depth'
+	}
+
+	send config
+
 buy = (opt) ->
-	log "#{name} ^ Покупка ^ #{JSON.stringify opt}"
+	log "#{name} >> Покупка #{JSON.stringify opt}"
 
 	opt.type = 'buy'
 
 	trade opt
 
 sell = (opt) ->
-	log "#{name} v Продажа v #{JSON.stringify opt}"
+	log "#{name} << Продажа #{JSON.stringify opt}"
 
 	opt.type = 'sell'
 
 	trade opt
 
-ticker = (config) ->	
-	config.url = "https://btc-e.nz/api/2/#{config.pair}/ticker"
+ticker = (config) ->
+	api = config.api or 2
+	config.url = "https://btc-e.nz/api/#{api}/#{config.pair}/ticker"
 	config.method = 'GET'
 
 	send config
@@ -53,6 +62,7 @@ cancel = (config) ->
 
 module.exports = {
 	info
+	depth
 	buy
 	sell
 	ticker
@@ -71,18 +81,24 @@ send = (config) ->
 	configureRequest config, (params) ->
 		target = config.url or url
 
-		request target, params, (error, response, body) ->
-			body = parseBody body
+		request target, params, resultParser(config)
 
-			failure = error or (body.success is 0 and body.error isnt 'no orders')
 
-			if failure
-				logError "#{name} Проблемы с трейдером", error, body
-				config.failure? error, body
-			else
-				config.success? body
+resultParser = (config) -> (error, response, body) ->
+	body = parseBody body
 
-			config.always? error, body
+	failure = error or (body.success is 0 and body.error isnt 'no orders')
+
+	try
+		if failure
+			logError "#{name} Проблемы", error, config, body
+			config.failure? error, body
+		else
+			config.success? body
+
+		config.always? error, body
+	catch error
+		logError "#{name} Ошибка колбека", error, config, body
 
 configureRequest = (config, next) ->
 	getNonce config, (nonce) ->
